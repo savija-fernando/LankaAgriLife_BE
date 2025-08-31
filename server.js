@@ -16,7 +16,7 @@ app.use(bodyParser.json());
 
 const URL = process.env.MONGODB_URL;  // access the database
 
-// mongoose connection 
+// mongoose connection connection
 mongoose.connect(URL)
     .then(() => console.log("MongoDB Connection success!"))
     .catch((err) => console.error("MongoDB connection error:", err));
