@@ -20,3 +20,10 @@ const URL = process.env.MONGODB_URL;  // access the database
 mongoose.connect(URL)
     .then(() => console.log("MongoDB Connection success!"))
     .catch((err) => console.error("MongoDB connection error:", err));
+
+const RevenueRouter=require("./routes/Revenue");
+app.use("/Revenue",RevenueRouter);
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
