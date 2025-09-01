@@ -62,19 +62,35 @@ router.route("/add").post((req,res)=>{ //when inserting we use post
         const update = await Inventory.findOneAndUpdate(
             { inventory_id: inventoryId }, 
             updateInventory,
-            { new: true }
+            { new: true }  //return the updated doc
         );
             if (!update) {
             return res.status(404).json({ message: "Inventory item not found" });
             }
-
-            res.status(200).json({ message: "Inventory updated successfully", data: update });
+            else
+                res.status(200).json({ message: "Inventory updated successfully", data: update });
 
         } catch (error) {
              res.status(500).json({ message: "Error updating inventory", error: error.message });
         }
 
     }); 
+    //delete
+    router.route("/delete/:id").delete(async(req,res)=>{
+        let inventoryId = req.params.id;
+
+        try {
+            const deletedItem = await Inventory.findOneAndDelete({ inventory_id: inventoryId });
+
+            if (!deletedItem) {
+                return res.status(404).json({ message: "Inventory item not found" });
+            }
+
+            res.status(200).json({ message: "Inventory item deleted successfully", data: deletedItem });
+            } catch (error) {
+            res.status(500).json({ message: "Error deleting inventory item", error: error.message });
+            }
+    })
 
     module.exports=router;  //its a must
 
