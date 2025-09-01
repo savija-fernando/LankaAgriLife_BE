@@ -13,7 +13,7 @@ const inventorySchema = new mongoose.Schema({
     },
     dateAdded: {
         type: Date,
-        default: Date.now
+        
     },
     expiryDate: {
         type: Date

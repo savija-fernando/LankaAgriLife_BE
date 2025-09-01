@@ -7,8 +7,8 @@ router.route("/add").post((req,res)=>{ //when inserting we use post
     //getting the the values using request
     const inventory_id=req.body.inventory_id;
     const itemName=req.body.itemName;
-    const dateAdded=Date(req.body.dateAdded);
-    const expiryDate=Date(req.body.expiryDate);
+    const dateAdded=new Date(req.body.dateAdded);
+    const expiryDate=new Date(req.body.expiryDate);
     const stockLevel=Number(req.body.stockLevel);
     const unitPrice=Number(req.body.unitPrice);
 
