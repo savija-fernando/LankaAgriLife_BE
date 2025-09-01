@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 8070;   //if 8070 port is not there assign the 
 app.use(cors());
 app.use(bodyParser.json());
 
-const URL = process.env.MONGODB_URL;  // access the database
+const URL = process.env.MONGODB_URL;  // access the database.
 
 // mongoose connection
 mongoose.connect(URL)
