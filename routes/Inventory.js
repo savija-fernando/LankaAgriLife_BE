@@ -30,7 +30,7 @@ router.route("/add").post((req,res)=>{ //when inserting we use post
         res.status(500).json("Error:"+error);
     });
 });
-//http//localhost:8070/Inventory
+//http://localhost:8070/Inventory
     //get all data
     router.route("/").get((req,res)=>{
         Inventory.find().then((inventories)=>{
@@ -79,7 +79,7 @@ router.route("/add").post((req,res)=>{ //when inserting we use post
     router.route("/delete/:id").delete(async(req,res)=>{
         let inventoryId = req.params.id;
 
-        try {
+        try { 
             const deletedItem = await Inventory.findOneAndDelete({ inventory_id: inventoryId });
 
             if (!deletedItem) {
@@ -90,7 +90,18 @@ router.route("/add").post((req,res)=>{ //when inserting we use post
             } catch (error) {
             res.status(500).json({ message: "Error deleting inventory item", error: error.message });
             }
-    })
+    });
+
+    //low stock alerts
+    router.route("/low-stock").get(async(req,res)=>{
+        try{
+            const lowStock= await Inventory.find({$expr:{$lt:["$stockLevel","$threshold"]}});
+            res.json(lowStock);
+        }catch(error){
+            res.status(500).json({message:error.message});
+
+        }
+    });
 
     module.exports=router;  //its a must
 

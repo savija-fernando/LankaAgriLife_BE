@@ -27,6 +27,12 @@ const inventorySchema = new mongoose.Schema({
         type: Number,
         required: true,
         min: 0
+    },
+    threshold:{   //low stock alert
+        type:Number,
+        default:10,
+        min:0
+
     }
 }, {
     timestamps: true   // adds createdAt & updatedAt automatically
