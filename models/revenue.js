@@ -18,10 +18,10 @@ const revenueSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  supervisor_id: {
+  rsupervisor_id: {
     type: String,
     required: true,
-    ref: "Supervisor" // reference to supervisor collection if exists
+    ref: revenueSupervisor // reference to supervisor collection if exists
   }
 }, { timestamps: true });
 

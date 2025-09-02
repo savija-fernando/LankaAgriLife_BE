@@ -3,13 +3,13 @@ const { error } = require("console");
 let Revenue=require("../models/revenue");
 const { Router } = require("express");
 
-router.route("/add").post((req,res)=>{ //when inserting we use post
+router.route("/add").post((req,res)=>{ //when inserting we use post (request and respond)
     //getting the the values using request
     const revenue_id=req.body.revenue_id;
     const salesData=Number(req.body.salesData);
     const expenseData=Number(req.body.expenseData);
     const profit=Number(req.body.profit);
-    const supervisor_id=req.body.supervisor_id;
+    const rsupervisor_id=req.body.supervisor_id;
 
 
 
@@ -19,9 +19,9 @@ router.route("/add").post((req,res)=>{ //when inserting we use post
         salesData,
         expenseData,
         profit,
-        supervisor_id
+        rsupervisor_id
     });
-    //saveing to Database
+    //saving to Database
     newRevenue.save().then(()=>{
         res.json("Revenue item added!");
     })
