@@ -21,8 +21,8 @@ mongoose.connect(URL)
     .catch((err) => console.error("MongoDB connection error:", err));
 
 
-//const InventoryRouter=require("./routes/Inventory");
-//app.use("/Inventory",InventoryRouter);
+const PlantRouter=require("./routes/Plant");
+app.use("/Plant",PlantRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
