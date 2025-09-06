@@ -10,7 +10,7 @@ const compostSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  status: {
+  compostStatus: {
     type: String,
     enum: ["fermenting", "ready", "used", "discarded"], // you can customize statuses
     required: true

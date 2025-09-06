@@ -1,50 +1,72 @@
-const router=require("express").Router();
-const { error } = require("console");
-let compost=require("../models/Compost");
-const { Router } = require("express");
+const router = require("express").Router();
 const Compost = require("../models/Compost");
 
-router.route("/add").post((req,res)=>{ //when inserting we use post
-    //getting the the values using request
-    const compost_id=req.body.compost_id;
-    const quantity=Number(req.body.quantity);
-    const fermentingDate=Date(req.body.fermentingDate);
-    const employee_id  =req.body.employee_id;
-    const waste_id=req.body.waste_id;
-    const inventory_id=req.body.inventory_id;
-   
+// Add compost
+router.route("/add").post((req, res) => {
+    const { compost_id, quantity, fermentingDate, employee_id, waste_id, inventory_id, compostStatus } = req.body;
 
-    //sending data to database or create objects from schema
-    const newCompost= new Compost({
+    const newCompost = new Compost({
+        compost_id,
+        quantity: Number(quantity),
+        fermentingDate: new Date(fermentingDate),
+        employee_id,
+        waste_id,
+        inventory_id,
+        compostStatus
+    });
+
+    newCompost.save()
+        .then(() => res.json("Compost item added!"))
+        .catch((error) => {
+            console.error(error);
+            res.status(500).json({ error: "Error: " + error.message });
+        });
+});
+
+// Get all compost records
+router.route("/").get((req, res) => {
+    Compost.find()
+        .then((compost) => res.json(compost))
+        .catch((error) => {
+            console.error(error);
+            res.status(500).json({ error: error.message });
+        });
+});
+
+// Update compost by ID
+router.route("/update/:id").put(async (req, res) => {
+    const compostId = req.params.id;
+    const { compost_id, quantity, fermentingDate, employee_id, waste_id, inventory_id } = req.body;
+
+    const updateCompost = {
         compost_id,
         quantity,
-        fermentingDate,
+        fermentingDate: new Date(fermentingDate),
         employee_id,
         waste_id,
         inventory_id
-    });
-    //saveing to Database
-    newInventory.save().then(()=>{
-        res.json("Compost item added!");
-    })
-    .catch((error)=>{
-        console.log(error);
-        res.status(500).json("Error:"+error);
-    });
-});
-//http//localhost:8070/Compost
-    //get all data
-    router.route("/").get((req,res)=>{
-        compost.find().then((Compost)=>{
-            res.json(Compost)
-        }).catch((error)=>{
-            console.log(error)
+    };
+
+    await Compost.findByIdAndUpdate(compostId, updateCompost, { new: true })
+        .then((updated) => {
+            res.status(200).send({ status: "Compost updated", compost: updated });
         })
-    });
-//http//localhsot:8070/Inventory/update/
-    router.route("/update/:id").put(async(req,res)=>{  //:id fetching the id part using url and put using for update
-        let userId=req.params.id;
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send({ status: "Error with updating data", error: err.message });
+        });
+});
 
-    }) 
+// Delete compost by ID
+router.route("/delete/:id").delete(async (req, res) => {
+    const compostId = req.params.id;
 
-    module.exports=router;  //its a must
+    await Compost.findByIdAndDelete(compostId)
+        .then(() => res.status(200).send({ status: "Compost deleted" }))
+        .catch((err) => {
+            console.error(err);
+            res.status(500).send({ status: "Error with delete compost", error: err.message });
+        });
+});
+
+module.exports = router;
