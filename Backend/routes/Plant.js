@@ -96,6 +96,6 @@ router.route("/add").post((req,res)=>{ //when inserting we use post
             } catch (error) {
             res.status(500).json({ message: "Error deleting plant", error: error.message });
     }
-})
+});
 
     module.exports=router; //its a must

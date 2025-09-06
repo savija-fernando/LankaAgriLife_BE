@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const plantSchema = new mongoose.Schema({
   crop_id: {
