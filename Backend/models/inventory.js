@@ -34,8 +34,6 @@ const inventorySchema = new mongoose.Schema({
         min:0
 
     }
-}, {
-    timestamps: true   // adds createdAt & updatedAt automatically
 });
 
 // Create model
