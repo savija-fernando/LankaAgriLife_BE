@@ -23,4 +23,8 @@ router.delete("/delete/:id", deleteInventoryItem);
 // GET /Inventory/low-stock
 router.get("/low-stock", getLowStockItems);
 
+//GET /Inventory/export/pdf
+const genaratePDF=require('../controllers/pdfController');
+router.get('/export/pdf',genaratePDF);
+
 module.exports = router;
