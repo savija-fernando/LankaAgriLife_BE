@@ -1,7 +1,8 @@
 // src/pages/Products.jsx
 import React, { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import { getAllHarvests } from "../api/harvestAPI"; // Your existing API function
+import { getAllHarvests } from "../api/harvestAPI";
+import { getAllProduct } from "../api/productAPI";
 
 // Import images
 import carrot from "../assets/carrot.png";
@@ -16,18 +17,11 @@ import rice from "../assets/Rice.jpg";
 import chilli from "../assets/chilli.jpg";
 import corn from "../assets/corn.jpg";
 import potato from "../assets/potato.jpg";
+import milk from "../assets/milk.jpg";
+import cheese from "../assets/cheese.jpg";
+import egg from "../assets/egg.jpg";
 
 const productsData = [
- 
-  {
-    name: "Farm Fresh Eggs",
-    image: eggs,
-    description: "Free-range chicken eggs rich in protein.",
-    available: 12,
-    unit: "dozen",
-    status: "In Stock",
-    tag: "Products",
-  },
   {
     name: "Premium Compost",
     image: compost,
@@ -37,51 +31,6 @@ const productsData = [
     status: "In Stock",
     tag: "Compost",
   },
-  {
-    name: "Fresh Hay",
-    image: hay,
-    description: "High-quality hay for livestock and gardens.",
-    available: 0,
-    unit: "bales",
-    status: "Out of Stock",
-    tag: "Products",
-  },
-  {
-    name: "Bell Peppers",
-    image: bellPepper,
-    description: "Fresh bell peppers with vibrant colors.",
-    available: 15,
-    unit: "lbs",
-    status: "In Stock",
-    tag: "Products",
-  },
-  {
-    name: "Organic Broccoli",
-    image: broccoli,
-    description: "Crisp organic broccoli rich in nutrients.",
-    available: 10,
-    unit: "heads",
-    status: "Low Stock",
-    tag: "Products",
-  },
-  {
-    name: "Vine Tomatoes",
-    image: tomato,
-    description: "Juicy vine-ripened organic tomatoes.",
-    available: 7,
-    unit: "lbs",
-    status: "In Stock",
-    tag: "Products",
-  },
-  {
-    name: "Crisp Lettuce",
-    image: lettuce,
-    description: "Fresh lettuce heads perfect for salads.",
-    available: 15,
-    unit: "heads",
-    status: "In Stock",
-    tag: "Products",
-  },
 ];
 
 const Products = () => {
@@ -89,45 +38,71 @@ const Products = () => {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("name");
   const [harvests, setHarvests] = useState([]);
+  const [dairyProducts, setDairyProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Fetch harvests on mount
+  // Fetch data on mount
   useEffect(() => {
-    fetchHarvests();
+    fetchData();
   }, []);
 
-  const fetchHarvests = async () => {
+  const fetchData = async () => {
     try {
-      const res = await getAllHarvests();
-      setHarvests(res.data);
+      setLoading(true);
+      const [harvestsResponse, productsResponse] = await Promise.all([
+        getAllHarvests(),
+        getAllProduct()
+      ]);
+      setHarvests(harvestsResponse.data);
+      setDairyProducts(productsResponse.data);
     } catch (error) {
-      console.error("Failed to fetch harvests:", error);
+      console.error("Failed to fetch data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  // Convert harvests to product format for display
-  const harvestProducts = harvests.map(harvest => ({
-    name: harvest.type,
-    image: getHarvestImage(harvest.type), // Function to map harvest type to image
-    description: harvest.note || `Freshly harvested ${harvest.type.toLowerCase()}`,
-    available: parseInt(harvest.quantity) || 0,
-    unit: "units",
-    status: getStockStatus(harvest.quantity),
-    tag: "Harvest",
-    isHarvest: true, // Flag to identify harvest items
-    harvestDate: harvest.harvestDate,
-    originalData: harvest
-  }));
-
-  // Helper function to get stock status based on quantity
-  function getStockStatus(quantity) {
+  // Helper function to get stock status based on quantity AND processing status
+  function getStockStatus(quantity, processedStatus = null) {
+    // If it's a dairy product and not processed, show as Out of Stock
+    if (processedStatus && processedStatus.toLowerCase() === 'unprocessed') {
+      return "Out of Stock";
+    }
+    
     const qty = parseInt(quantity) || 0;
     if (qty === 0) return "Out of Stock";
     if (qty < 5) return "Low Stock";
     return "In Stock";
   }
+
+  // Convert harvests to product format for display
+  const harvestProducts = harvests.map(harvest => ({
+    name: harvest.type,
+    image: getHarvestImage(harvest.type),
+    description: harvest.note || `Freshly harvested ${harvest.type.toLowerCase()}`,
+    available: parseInt(harvest.quantity) || 0,
+    unit: "units",
+    status: getStockStatus(harvest.quantity),
+    tag: "Harvest",
+    isHarvest: true,
+    harvestDate: harvest.harvestDate,
+    originalData: harvest
+  }));
+
+  // Convert dairy products to product format for display - now under "Products" tag
+  const dairyProductItems = dairyProducts.map(product => ({
+    name: product.type,
+    image: getDairyImage(product.type),
+    description: product.storageDetails || `Farm-fresh ${product.type.toLowerCase()}`,
+    available: parseInt(product.quantity) || 0,
+    unit: getDairyUnit(product.type),
+    status: getStockStatus(product.quantity, product.processedStatus), // Pass processedStatus
+    tag: "Products",
+    isDairy: true,
+    collectionDate: product.CollectionDate,
+    processedStatus: product.processedStatus,
+    originalData: product
+  }));
 
   // Helper function to map harvest types to images
   function getHarvestImage(type) {
@@ -142,12 +117,30 @@ const Products = () => {
     if (typeLower.includes('chilli')) return chilli;
     if (typeLower.includes('corn')) return corn;
     if (typeLower.includes('potato')) return potato;
-    // Default image
     return carrot;
   }
 
-  // Combine both products and harvests
-  const allProducts = [...productsData, ...harvestProducts];
+  // Helper function to map dairy types to images
+  function getDairyImage(type) {
+    const typeLower = type.toLowerCase();
+    if (typeLower.includes('milk')) return milk;
+    if (typeLower.includes('cheese')) return cheese;
+    if (typeLower.includes('egg')) return egg;
+    return milk; // default image
+  }
+
+  // Helper function to get appropriate units for dairy products
+  function getDairyUnit(type) {
+    const typeLower = type.toLowerCase();
+    if (typeLower.includes('milk')) return 'liters';
+    if (typeLower.includes('cheese')) return 'blocks';
+    if (typeLower.includes('yogurt') || typeLower.includes('yoghurt')) return 'pots';
+    if (typeLower.includes('egg')) return 'dozen';
+    return 'units';
+  }
+
+  // Combine all products
+  const allProducts = [...productsData, ...harvestProducts, ...dairyProductItems];
 
   // Filtering + searching
   const filteredProducts = allProducts.filter((p) => {
@@ -165,8 +158,28 @@ const Products = () => {
     if (sort === "date" && a.isHarvest && b.isHarvest) {
       return new Date(b.harvestDate) - new Date(a.harvestDate);
     }
+    if (sort === "date" && a.isDairy && b.isDairy) {
+      return new Date(b.collectionDate) - new Date(a.collectionDate);
+    }
     return 0;
   });
+
+  // Statistics
+  const totalHarvests = harvests.length;
+  const totalDairyProducts = dairyProducts.length;
+  const differentCrops = [...new Set(harvests.map(h => h.type))].length;
+  const differentDairyTypes = [...new Set(dairyProducts.map(p => p.type))].length;
+  const totalHarvested = harvests.reduce((sum, h) => sum + parseInt(h.quantity || 0), 0);
+  const totalDairyQuantity = dairyProducts.reduce((sum, p) => sum + parseInt(p.quantity || 0), 0);
+
+  // Count processed vs unprocessed dairy products
+  const processedDairyCount = dairyProducts.filter(p => 
+    p.processedStatus && p.processedStatus.toLowerCase() === 'processed'
+  ).length;
+  
+  const unprocessedDairyCount = dairyProducts.filter(p => 
+    p.processedStatus && p.processedStatus.toLowerCase() === 'unprocessed'
+  ).length;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-emerald-50">
@@ -181,27 +194,34 @@ const Products = () => {
             Our Farm Products
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our premium selection of organic produce, farm-fresh goods, and sustainable agricultural products
+            Discover our premium selection of organic produce, farm-fresh goods, dairy products, and sustainable agricultural products
           </p>
           
-          {/* Harvest Stats */}
-          {harvests.length > 0 && !loading && (
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4 max-w-2xl mx-auto">
+          {/* Statistics */}
+          {(harvests.length > 0 || dairyProducts.length > 0) && !loading && (
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
-                <div className="text-lg font-bold text-green-700">{harvests.length}</div>
+                <div className="text-lg font-bold text-green-700">{totalHarvests}</div>
                 <div className="text-sm text-gray-600">Current Harvests</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
-                <div className="text-lg font-bold text-green-700">
-                  {[...new Set(harvests.map(h => h.type))].length}
+                <div className="text-lg font-bold text-blue-700">{totalDairyProducts}</div>
+                <div className="text-sm text-gray-600">Dairy Products</div>
+                <div className="text-xs text-gray-500 mt-1">
+                  {processedDairyCount} processed • {unprocessedDairyCount} unprocessed
                 </div>
-                <div className="text-sm text-gray-600">Different Crops</div>
               </div>
               <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
-                <div className="text-lg font-bold text-green-700">
-                  {harvests.reduce((sum, h) => sum + parseInt(h.quantity || 0), 0)}
+                <div className="text-lg font-bold text-purple-700">
+                  {differentCrops + differentDairyTypes}
                 </div>
-                <div className="text-sm text-gray-600">Total Harvested</div>
+                <div className="text-sm text-gray-600">Product Varieties</div>
+              </div>
+              <div className="bg-white/80 backdrop-blur-sm rounded-xl p-4 shadow-lg border border-white/20">
+                <div className="text-lg font-bold text-orange-700">
+                  {totalHarvested + totalDairyQuantity}
+                </div>
+                <div className="text-sm text-gray-600">Total Quantity</div>
               </div>
             </div>
           )}
@@ -253,7 +273,7 @@ const Products = () => {
                 <option value="name">Sort by Name (A–Z)</option>
                 <option value="availability">Sort by Availability (High–Low)</option>
                 <option value="status">Sort by Status</option>
-                <option value="date">Sort by Harvest Date</option>
+                <option value="date">Sort by Collection Date</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -278,7 +298,8 @@ const Products = () => {
               {sortedProducts.length > 0 ? (
                 sortedProducts.map((product, index) => (
                   <div
-                    key={product.isHarvest ? `harvest-${product.originalData.harvest_id}` : `product-${index}`}
+                    key={product.isHarvest ? `harvest-${product.originalData.harvest_id}` : 
+                         product.isDairy ? `dairy-${product.originalData.product_id}` : `product-${index}`}
                     className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-100"
                   >
                     {/* Image Container */}
@@ -304,15 +325,30 @@ const Products = () => {
                       </div>
                       {/* Tag Badge */}
                       <div className="absolute top-3 left-3">
-                        <span className="px-3 py-1 text-xs font-semibold rounded-full bg-white/90 backdrop-blur-sm text-green-700 shadow-lg">
+                        <span className={`px-3 py-1 text-xs font-semibold rounded-full bg-white/90 backdrop-blur-sm shadow-lg ${
+                          product.tag === "Harvest" ? "text-green-700" :
+                          product.tag === "Compost" ? "text-brown-700" :
+                          "text-gray-700"
+                        }`}>
                           {product.tag}
                         </span>
                       </div>
-                      {/* Harvest Date Badge */}
-                      {product.isHarvest && (
+                      {/* Date Badge */}
+                      {(product.isHarvest || product.isDairy) && (
                         <div className="absolute bottom-3 left-3">
                           <span className="px-2 py-1 text-xs font-semibold rounded-full bg-black/70 text-white backdrop-blur-sm">
-                            {new Date(product.harvestDate).toLocaleDateString()}
+                            {product.isHarvest 
+                              ? new Date(product.harvestDate).toLocaleDateString()
+                              : new Date(product.collectionDate).toLocaleDateString()
+                            }
+                          </span>
+                        </div>
+                      )}
+                      {/* Processing Status Badge for Unprocessed Products */}
+                      {product.isDairy && product.processedStatus && product.processedStatus.toLowerCase() === 'unprocessed' && (
+                        <div className="absolute top-12 right-3">
+                          <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-500 text-white shadow-lg">
+                            Unprocessed
                           </span>
                         </div>
                       )}
@@ -334,29 +370,39 @@ const Products = () => {
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-semibold text-gray-700">Availability:</span>
                           <span className={`text-sm font-bold ${
-                            product.available > 10 ? "text-green-600" : 
-                            product.available > 0 ? "text-yellow-600" : "text-red-600"
+                            product.status === "In Stock" ? "text-green-600" : 
+                            product.status === "Low Stock" ? "text-yellow-600" : "text-red-600"
                           }`}>
-                            {product.available} {product.unit}
+                            {product.status === "Out of Stock" && product.isDairy && product.processedStatus?.toLowerCase() === 'unprocessed' 
+                              ? "Not Available" 
+                              : `${product.available} ${product.unit}`
+                            }
                           </span>
                         </div>
                         <div className="mt-2 w-full bg-gray-200 rounded-full h-2">
                           <div 
                             className={`h-2 rounded-full ${
-                              product.available > 10 ? "bg-green-500" : 
-                              product.available > 0 ? "bg-yellow-500" : "bg-red-500"
+                              product.status === "In Stock" ? "bg-green-500" : 
+                              product.status === "Low Stock" ? "bg-yellow-500" : "bg-red-500"
                             }`}
                             style={{ 
-                              width: `${Math.min((product.available / 20) * 100, 100)}%` 
+                              width: product.status === "Out of Stock" && product.isDairy && product.processedStatus?.toLowerCase() === 'unprocessed' 
+                                ? "0%" 
+                                : `${Math.min((product.available / 20) * 100, 100)}%` 
                             }}
                           ></div>
                         </div>
                       </div>
 
-                      {/* Harvest-specific info */}
+                      {/* Product-specific info */}
                       {product.isHarvest && (
                         <div className="mt-3 text-xs text-gray-500">
                           Freshly harvested • ID: {product.originalData.harvest_id}
+                        </div>
+                      )}
+                      {product.isDairy && (
+                        <div className="mt-3 text-xs text-gray-500">
+                          {product.processedStatus} • ID: {product.originalData.product_id}
                         </div>
                       )}
                     </div>
@@ -381,6 +427,7 @@ const Products = () => {
                 <p className="text-gray-600 font-medium">
                   Showing {sortedProducts.length} of {allProducts.length} products
                   {harvests.length > 0 && ` (including ${harvests.length} harvests)`}
+                  {dairyProducts.length > 0 && ` and ${dairyProducts.length} dairy products`}
                 </p>
               </div>
             )}
