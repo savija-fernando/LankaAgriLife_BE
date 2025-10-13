@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllLivestock } from '../../api/livestockAPI';
 import { getAllAnimals } from '../../api/animalAPI';
-import { Users, Shield, Heart, Calendar, Stethoscope, Scale, Baby, UserPlus, UserX } from 'lucide-react';
+import { Users, Shield, Heart, Calendar, Stethoscope, Scale, Baby, UserPlus, UserX, Download } from 'lucide-react';
 
 export default function Handlers() {
   const [handlers, setHandlers] = useState([]);
@@ -78,6 +78,333 @@ export default function Handlers() {
     a.healthRecord && !a.healthRecord.toLowerCase().includes('sick')
   ).length;
 
+  // PDF Generator without external libraries
+  const generatePDF = () => {
+    // Create a printable HTML content
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Farm Management Report</title>
+        <style>
+          @media print {
+            @page { margin: 1cm; }
+            body { 
+              font-family: Arial, sans-serif; 
+              line-height: 1.4;
+              color: #333;
+              margin: 0;
+              padding: 0;
+            }
+            .header { 
+              text-align: center; 
+              margin-bottom: 2cm;
+              border-bottom: 2px solid #333;
+              padding-bottom: 0.5cm;
+            }
+            .stats-grid { 
+              display: grid; 
+              grid-template-columns: repeat(2, 1fr); 
+              gap: 0.5cm; 
+              margin-bottom: 1cm;
+            }
+            .stat-card { 
+              border: 1px solid #ddd; 
+              padding: 0.5cm; 
+              border-radius: 0.3cm;
+              background: #f9f9f9;
+            }
+            .section { 
+              margin: 1cm 0; 
+              page-break-inside: avoid;
+            }
+            .section-title { 
+              background: #333; 
+              color: white; 
+              padding: 0.3cm; 
+              margin-bottom: 0.5cm;
+              border-radius: 0.2cm;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-bottom: 0.5cm;
+              font-size: 12px;
+            }
+            th, td { 
+              border: 1px solid #ddd; 
+              padding: 0.3cm; 
+              text-align: left;
+            }
+            th { 
+              background: #f0f0f0; 
+              font-weight: bold;
+            }
+            .no-break { 
+              page-break-inside: avoid;
+            }
+            .footer {
+              margin-top: 2cm;
+              text-align: center;
+              font-size: 0.8em;
+              color: #666;
+              border-top: 1px solid #ddd;
+              padding-top: 0.5cm;
+            }
+            h1 { margin: 0; font-size: 24px; }
+            h2 { margin: 0; font-size: 20px; }
+            h3 { margin: 0; font-size: 16px; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Farm Management Team Report</h1>
+          <p>Generated on: ${new Date().toLocaleDateString()}</p>
+          <p>1 Handler : 1 Animal - Dedicated Care System</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <strong>Total Handlers:</strong> ${totalHandlers}<br>
+            <small>Assigned: ${assignedHandlers} • Available: ${availableHandlers}</small>
+          </div>
+          <div class="stat-card">
+            <strong>Total Animals:</strong> ${totalAnimals}<br>
+            <small>Assigned: ${assignedAnimals} • Available: ${availableAnimals}</small>
+          </div>
+          <div class="stat-card">
+            <strong>Perfect Matches:</strong> ${Math.min(assignedHandlers, assignedAnimals)}
+          </div>
+          <div class="stat-card">
+            <strong>Healthy Animals:</strong> ${healthyAnimals}<br>
+            <small>${((healthyAnimals / totalAnimals) * 100).toFixed(1)}% of total</small>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Handler Details</div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Contact</th>
+                <th>Status</th>
+                <th>Assigned Animal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${handlers.map(handler => {
+                const animal = getHandlerAnimal(handler.handler_id);
+                return `
+                  <tr>
+                    <td>${handler.handler_id}</td>
+                    <td>${handler.firstName} ${handler.lastName}</td>
+                    <td>${handler.email}</td>
+                    <td>${handler.contact_No || 'N/A'}</td>
+                    <td>${animal ? 'Assigned' : 'Available'}</td>
+                    <td>${animal ? `${animal.species} (ID: ${animal.animal_id})` : 'None'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Animal Details</div>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Species</th>
+                <th>Health Record</th>
+                <th>Breeding Details</th>
+                <th>Date of Birth</th>
+                <th>Assigned Handler</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${animals.map(animal => {
+                const handler = handlers.find(h => 
+                  handlerAnimalMapping[h.handler_id]?.animal_id === animal.animal_id
+                );
+                return `
+                  <tr>
+                    <td>${animal.animal_id}</td>
+                    <td>${animal.species}</td>
+                    <td>${animal.healthRecord}</td>
+                    <td>${animal.breedingDetails}</td>
+                    <td>${animal.dateOfBirth ? new Date(animal.dateOfBirth).toLocaleDateString() : 'N/A'}</td>
+                    <td>${handler ? `${handler.firstName} ${handler.lastName}` : 'None'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section no-break">
+          <div class="section-title">Assignment Summary</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Handler Name</th>
+                <th>Handler ID</th>
+                <th>Animal Species</th>
+                <th>Animal ID</th>
+                <th>Assignment Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${handlers.map(handler => {
+                const animal = getHandlerAnimal(handler.handler_id);
+                return `
+                  <tr>
+                    <td>${handler.firstName} ${handler.lastName}</td>
+                    <td>${handler.handler_id}</td>
+                    <td>${animal ? animal.species : 'N/A'}</td>
+                    <td>${animal ? animal.animal_id : 'N/A'}</td>
+                    <td>${animal ? 'Assigned' : 'Unassigned'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="footer">
+          <p>Farm Management System Report • Generated automatically</p>
+          <p>Total Records: ${handlers.length} handlers, ${animals.length} animals</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    // Create a new window for printing
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+
+    // Wait for content to load then trigger print
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+  };
+
+  // Alternative PDF generation using browser's print functionality with custom styling
+  const generateSimplePDF = () => {
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Farm Management Report</title>
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 2cm;
+            line-height: 1.4;
+            color: #333;
+          }
+          .header { 
+            text-align: center; 
+            margin-bottom: 1cm;
+            border-bottom: 2px solid #333;
+            padding-bottom: 0.5cm;
+          }
+          .summary { 
+            background: #f5f5f5; 
+            padding: 1cm; 
+            margin: 1cm 0;
+            border-radius: 0.5cm;
+          }
+          table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 1cm 0;
+            font-size: 12px;
+          }
+          th, td { 
+            border: 1px solid #ddd; 
+            padding: 0.5cm; 
+            text-align: left;
+          }
+          th { 
+            background: #333; 
+            color: white;
+          }
+          .footer {
+            margin-top: 2cm;
+            text-align: center;
+            font-style: italic;
+            color: #666;
+          }
+          @media print {
+            @page { margin: 1cm; }
+            .no-print { display: none; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Farm Management Team Report</h1>
+          <p>Generated on: ${new Date().toLocaleDateString()}</p>
+        </div>
+        
+        <div class="summary">
+          <h3>Quick Summary</h3>
+          <p><strong>Handlers:</strong> ${totalHandlers} total, ${assignedHandlers} assigned, ${availableHandlers} available</p>
+          <p><strong>Animals:</strong> ${totalAnimals} total, ${assignedAnimals} assigned, ${availableAnimals} available</p>
+          <p><strong>Healthy Animals:</strong> ${healthyAnimals} (${((healthyAnimals / totalAnimals) * 100).toFixed(1)}%)</p>
+          <p><strong>Different Species:</strong> ${differentSpecies}</p>
+        </div>
+
+        <h3>Handler Assignments</h3>
+        <table>
+          <thead>
+            <tr>
+              <th>Handler</th>
+              <th>Contact</th>
+              <th>Assigned Animal</th>
+              <th>Animal Health</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${handlers.map(handler => {
+              const animal = getHandlerAnimal(handler.handler_id);
+              return `
+                <tr>
+                  <td>${handler.firstName} ${handler.lastName}<br><small>ID: ${handler.handler_id}</small></td>
+                  <td>${handler.email}<br>${handler.contact_No || 'No contact'}</td>
+                  <td>${animal ? `${animal.species} (ID: ${animal.animal_id})` : 'Not assigned'}</td>
+                  <td>${animal ? animal.healthRecord : 'N/A'}</td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+
+        <div class="footer">
+          <p>End of report - Farm Management System</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(printContent);
+    printWindow.document.close();
+    printWindow.focus();
+    
+    // Add delay to ensure content is fully loaded
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-cyan-100 p-6">
@@ -98,18 +425,36 @@ export default function Handlers() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-cyan-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-12">
+      <div className="max-w-7xl mx-auto" id="handlers-content">
+        {/* Header with PDF Button */}
+        <div className="text-center mb-12 relative">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-full shadow-lg mb-4">
             <Shield className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-700 to-cyan-600 bg-clip-text text-transparent mb-4">
             Farm Management Team
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
             1 Handler : 1 Animal - Dedicated care for each animal by our expert handlers
           </p>
+          
+          {/* PDF Generation Buttons */}
+          <div className="flex justify-center gap-4 flex-wrap">
+            <button
+              onClick={generatePDF}
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <Download className="w-5 h-5 mr-2" />
+              Generate Full Report
+            </button>
+            <button
+              onClick={generateSimplePDF}
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <Download className="w-5 h-5 mr-2" />
+              Quick Summary
+            </button>
+          </div>
         </div>
 
         {/* Statistics Cards */}
