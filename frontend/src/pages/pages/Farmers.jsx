@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllFarmers } from '../../api/farmerAPI';
 import { getAllPlants } from '../../api/plantAPI';
-import { User, Phone, Mail, ChevronDown, ChevronUp, Sprout, Users, Trees, Leaf } from 'lucide-react';
+import { User, Phone, Mail, ChevronDown, ChevronUp, Sprout, Users, Trees, Leaf, Download, BarChart3 } from 'lucide-react';
 
 export default function Farmers() {
   const [farmers, setFarmers] = useState([]);
@@ -33,6 +33,392 @@ export default function Farmers() {
     return plants.filter(plant => plant.employee_id === farmerId);
   };
 
+  // Calculate analytics data
+  const calculateAnalytics = () => {
+    const totalFarmers = farmers.length;
+    const activeFarmers = farmers.filter(farmer => getFarmerPlants(farmer.farmer_id).length > 0).length;
+    const totalPlants = plants.length;
+    const plantVarieties = [...new Set(plants.map(p => p.type))].length;
+    
+    // Plant type distribution
+    const plantTypeCounts = plants.reduce((acc, plant) => {
+      const type = plant.type || 'Unknown';
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Farmer performance (plants per farmer)
+    const farmerPerformance = farmers.map(farmer => {
+      const farmerPlants = getFarmerPlants(farmer.farmer_id);
+      return {
+        name: `${farmer.f_name} ${farmer.l_name}`,
+        farmerId: farmer.farmer_id,
+        plantCount: farmerPlants.length,
+        plantTypes: [...new Set(farmerPlants.map(p => p.type))],
+        totalWater: farmerPlants.reduce((sum, p) => sum + (parseInt(p.waterIntake) || 0), 0),
+        totalFertilizer: farmerPlants.reduce((sum, p) => sum + (parseInt(p.fertilizerIntake) || 0), 0)
+      };
+    });
+
+    // Location distribution
+    const locationCounts = plants.reduce((acc, plant) => {
+      const location = plant.location || 'Unknown';
+      acc[location] = (acc[location] || 0) + 1;
+      return acc;
+    }, {});
+
+    return {
+      totalFarmers,
+      activeFarmers,
+      totalPlants,
+      plantVarieties,
+      plantTypeCounts,
+      farmerPerformance,
+      locationCounts,
+      inactiveFarmers: totalFarmers - activeFarmers,
+      avgPlantsPerFarmer: activeFarmers > 0 ? (totalPlants / activeFarmers).toFixed(1) : 0
+    };
+  };
+
+  const analytics = calculateAnalytics();
+
+  // Generate PDF Report
+  const generateReport = () => {
+    const reportContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Farm Management Report</title>
+        <style>
+          @media print {
+            @page { margin: 1cm; }
+            body { 
+              font-family: Arial, sans-serif; 
+              line-height: 1.4;
+              color: #333;
+              margin: 0;
+              padding: 0;
+            }
+            .header { 
+              text-align: center; 
+              margin-bottom: 2cm;
+              border-bottom: 2px solid #2e7d32;
+              padding-bottom: 0.5cm;
+            }
+            .summary-grid { 
+              display: grid; 
+              grid-template-columns: repeat(2, 1fr); 
+              gap: 0.5cm; 
+              margin-bottom: 1cm;
+            }
+            .summary-card { 
+              border: 1px solid #ddd; 
+              padding: 0.5cm; 
+              border-radius: 0.3cm;
+              background: #f9f9f9;
+            }
+            .section { 
+              margin: 1cm 0; 
+              page-break-inside: avoid;
+            }
+            .section-title { 
+              background: #2e7d32; 
+              color: white; 
+              padding: 0.3cm; 
+              margin-bottom: 0.5cm;
+              border-radius: 0.2cm;
+            }
+            table { 
+              width: 100%; 
+              border-collapse: collapse; 
+              margin-bottom: 0.5cm;
+              font-size: 12px;
+            }
+            th, td { 
+              border: 1px solid #ddd; 
+              padding: 0.3cm; 
+              text-align: left;
+            }
+            th { 
+              background: #f0f0f0; 
+              font-weight: bold;
+            }
+            .footer {
+              margin-top: 2cm;
+              text-align: center;
+              font-size: 0.8em;
+              color: #666;
+              border-top: 1px solid #ddd;
+              padding-top: 0.5cm;
+            }
+            h1 { margin: 0; font-size: 24px; color: #2e7d32; }
+            h2 { margin: 0; font-size: 20px; }
+            h3 { margin: 0; font-size: 16px; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Farm Management Report</h1>
+          <p>Generated on: ${new Date().toLocaleDateString()}</p>
+          <p>Comprehensive overview of farmers and plant management</p>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <strong>Total Farmers:</strong> ${analytics.totalFarmers}<br>
+            <small>${analytics.activeFarmers} active • ${analytics.inactiveFarmers} inactive</small>
+          </div>
+          <div class="summary-card">
+            <strong>Total Plants:</strong> ${analytics.totalPlants}<br>
+            <small>Across all farmers</small>
+          </div>
+          <div class="summary-card">
+            <strong>Plant Varieties:</strong> ${analytics.plantVarieties}<br>
+            <small>Different types of plants</small>
+          </div>
+          <div class="summary-card">
+            <strong>Average Plants/Farmer:</strong> ${analytics.avgPlantsPerFarmer}<br>
+            <small>For active farmers</small>
+          </div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Farmer Details</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Farmer ID</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Plants Managed</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${farmers.map(farmer => {
+                const farmerPlants = getFarmerPlants(farmer.farmer_id);
+                return `
+                  <tr>
+                    <td>${farmer.farmer_id}</td>
+                    <td>${farmer.f_name} ${farmer.l_name}</td>
+                    <td>${farmer.email || 'N/A'}</td>
+                    <td>${farmer.contact_No || 'N/A'}</td>
+                    <td>${farmerPlants.length}</td>
+                    <td>${farmerPlants.length > 0 ? 'Active' : 'Inactive'}</td>
+                  </tr>
+                `;
+              }).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Plant Type Distribution</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Plant Type</th>
+                <th>Count</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${Object.entries(analytics.plantTypeCounts).map(([type, count]) => `
+                <tr>
+                  <td>${type}</td>
+                  <td>${count}</td>
+                  <td>${analytics.totalPlants > 0 ? ((count / analytics.totalPlants) * 100).toFixed(1) : 0}%</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <div class="section-title">Farmer Performance</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Farmer Name</th>
+                <th>Plants Managed</th>
+                <th>Plant Types</th>
+                <th>Total Water (ml/day)</th>
+                <th>Total Fertilizer (g/week)</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${analytics.farmerPerformance
+                .filter(f => f.plantCount > 0)
+                .sort((a, b) => b.plantCount - a.plantCount)
+                .map(farmer => `
+                  <tr>
+                    <td>${farmer.name}</td>
+                    <td>${farmer.plantCount}</td>
+                    <td>${farmer.plantTypes.join(', ')}</td>
+                    <td>${farmer.totalWater}</td>
+                    <td>${farmer.totalFertilizer}</td>
+                  </tr>
+                `).join('')}
+            </tbody>
+          </table>
+        </div>
+
+        ${Object.keys(analytics.locationCounts).length > 0 ? `
+        <div class="section">
+          <div class="section-title">Plant Location Distribution</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Location</th>
+                <th>Plant Count</th>
+                <th>Percentage</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${Object.entries(analytics.locationCounts).map(([location, count]) => `
+                <tr>
+                  <td>${location}</td>
+                  <td>${count}</td>
+                  <td>${analytics.totalPlants > 0 ? ((count / analytics.totalPlants) * 100).toFixed(1) : 0}%</td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+        ` : ''}
+
+        <div class="footer">
+          <p>Farm Management System Report • Generated automatically</p>
+          <p>Total Records: ${farmers.length} farmers, ${plants.length} plants</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(reportContent);
+    printWindow.document.close();
+    
+    printWindow.onload = () => {
+      printWindow.focus();
+      printWindow.print();
+    };
+  };
+
+  // Generate Quick Summary Report
+  const generateQuickReport = () => {
+    const quickContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Farm Management Quick Report</title>
+        <style>
+          body { 
+            font-family: Arial, sans-serif; 
+            margin: 2cm;
+            line-height: 1.4;
+            color: #333;
+          }
+          .header { 
+            text-align: center; 
+            margin-bottom: 1cm;
+            border-bottom: 2px solid #2e7d32;
+            padding-bottom: 0.5cm;
+          }
+          .stats-grid { 
+            display: grid; 
+            grid-template-columns: repeat(2, 1fr); 
+            gap: 0.5cm; 
+            margin: 1cm 0;
+          }
+          .stat-card { 
+            background: #f5f5f5; 
+            padding: 0.5cm; 
+            border-radius: 0.3cm;
+            text-align: center;
+          }
+          .footer {
+            margin-top: 2cm;
+            text-align: center;
+            font-style: italic;
+            color: #666;
+          }
+          @media print {
+            @page { margin: 1cm; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <h1>Farm Management Quick Report</h1>
+          <p>Generated on: ${new Date().toLocaleDateString()}</p>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Farmers</h3>
+            <p style="font-size: 24px; font-weight: bold; color: #2e7d32; margin: 0.2cm 0;">${analytics.totalFarmers}</p>
+            <small>${analytics.activeFarmers} active</small>
+          </div>
+          <div class="stat-card">
+            <h3>Total Plants</h3>
+            <p style="font-size: 24px; font-weight: bold; color: #d32f2f; margin: 0.2cm 0;">${analytics.totalPlants}</p>
+            <small>Managed plants</small>
+          </div>
+          <div class="stat-card">
+            <h3>Plant Varieties</h3>
+            <p style="font-size: 24px; font-weight: bold; color: #1976d2; margin: 0.2cm 0;">${analytics.plantVarieties}</p>
+            <small>Different types</small>
+          </div>
+          <div class="stat-card">
+            <h3>Avg Plants/Farmer</h3>
+            <p style="font-size: 24px; font-weight: bold; color: #ed6c02; margin: 0.2cm 0;">${analytics.avgPlantsPerFarmer}</p>
+            <small>Per active farmer</small>
+          </div>
+        </div>
+
+        <div style="margin: 1cm 0;">
+          <h3>Top Performing Farmers</h3>
+          <ul>
+            ${analytics.farmerPerformance
+              .filter(f => f.plantCount > 0)
+              .sort((a, b) => b.plantCount - a.plantCount)
+              .slice(0, 5)
+              .map(farmer => `<li>${farmer.name}: ${farmer.plantCount} plants</li>`)
+              .join('')}
+          </ul>
+        </div>
+
+        <div style="margin: 1cm 0;">
+          <h3>Most Common Plant Types</h3>
+          <ul>
+            ${Object.entries(analytics.plantTypeCounts)
+              .sort((a, b) => b[1] - a[1])
+              .slice(0, 5)
+              .map(([type, count]) => `<li>${type}: ${count} plants</li>`)
+              .join('')}
+          </ul>
+        </div>
+
+        <div class="footer">
+          <p>End of quick report - Farm Management System</p>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(quickContent);
+    printWindow.document.close();
+    printWindow.focus();
+    
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 p-6">
@@ -62,9 +448,27 @@ export default function Farmers() {
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-700 to-emerald-600 bg-clip-text text-transparent mb-4">
             Farm Managers
           </h1>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-6">
             Meet our dedicated farmers and explore the plants they nurture with care and expertise
           </p>
+          
+          {/* Report Generation Buttons */}
+          <div className="flex justify-center gap-4">
+            <button
+              onClick={generateQuickReport}
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-500 to-cyan-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <Download className="w-5 h-5 mr-2" />
+              Quick Report
+            </button>
+            <button
+              onClick={generateReport}
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
+            >
+              <BarChart3 className="w-5 h-5 mr-2" />
+              Full Report
+            </button>
+          </div>
         </div>
 
         {/* Statistics Cards */}
@@ -74,6 +478,9 @@ export default function Farmers() {
               <div>
                 <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Farmers</p>
                 <p className="text-3xl font-bold text-green-700 mt-2">{farmers.length}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {analytics.activeFarmers} active • {analytics.inactiveFarmers} inactive
+                </p>
               </div>
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
                 <Users className="w-6 h-6 text-green-600" />
@@ -88,6 +495,9 @@ export default function Farmers() {
                 <p className="text-3xl font-bold text-blue-600 mt-2">
                   {farmers.filter(farmer => getFarmerPlants(farmer.farmer_id).length > 0).length}
                 </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Avg: {analytics.avgPlantsPerFarmer} plants/farmer
+                </p>
               </div>
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
                 <User className="w-6 h-6 text-blue-600" />
@@ -100,6 +510,9 @@ export default function Farmers() {
               <div>
                 <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Total Plants</p>
                 <p className="text-3xl font-bold text-yellow-600 mt-2">{plants.length}</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  {analytics.plantVarieties} varieties
+                </p>
               </div>
               <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
                 <Trees className="w-6 h-6 text-yellow-600" />
@@ -113,6 +526,9 @@ export default function Farmers() {
                 <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Plant Varieties</p>
                 <p className="text-3xl font-bold text-purple-600 mt-2">
                   {[...new Set(plants.map(p => p.type))].length}
+                </p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Different plant types
                 </p>
               </div>
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center">
