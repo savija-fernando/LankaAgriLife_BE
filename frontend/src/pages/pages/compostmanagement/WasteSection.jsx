@@ -160,8 +160,12 @@ const WasteSection = () => {
             <h2 className="text-xl font-semibold text-green-700 mb-4">
               {editMode ? "Edit Waste" : "Add Waste"}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {/* Waste ID (only when adding) */}
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Waste Information */}
+              <h3 className="text-lg font-semibold text-blue-600 border-b border-blue-300 pb-1">
+                Waste Information
+              </h3>
+
               {!editMode && (
                 <Input
                   name="waste_id"
@@ -179,17 +183,23 @@ const WasteSection = () => {
               />
               <Input
                 name="type"
-                placeholder="Type"
+                placeholder="Waste Type"
                 value={currentWaste.type}
                 onChange={handleInputChange}
               />
+
+              {/* Date Details */}
+              <h3 className="text-lg font-semibold text-blue-600 border-b border-blue-300 pb-1 mt-3">
+                Date Details
+              </h3>
               <Input
                 name="date"
                 type="date"
                 value={currentWaste.date}
                 onChange={handleInputChange}
               />
-              <div className="flex justify-end gap-3">
+
+              <div className="flex justify-end gap-3 mt-4">
                 <Button
                   onClick={() => setIsModalOpen(false)}
                   className="bg-red-600 hover:bg-red-500"

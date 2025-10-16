@@ -162,52 +162,76 @@ const ProductsSection = () => {
               {editMode ? 'Edit Product' : 'Add New Product'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-3">
-              {!editMode && (
-                <Input
-                  name="product_id"
-                  placeholder="Product ID"
-                  value={currentProduct.product_id}
-                  onChange={handleInputChange}
-                />
-              )}
-              <Input
-                name="type"
-                placeholder="Type"
-                value={currentProduct.type}
-                onChange={handleInputChange}
-              />
-              <Input
-                name="storageDetails"
-                placeholder="Storage Details"
-                value={currentProduct.storageDetails}
-                onChange={handleInputChange}
-              />
-              <Input
-                name="quantity"
-                placeholder="Quantity"
-                value={currentProduct.quantity}
-                onChange={handleInputChange}
-              />
-              <Input
-                name="CollectionDate"
-                type="date"
-                placeholder="Collection Date"
-                value={currentProduct.CollectionDate}
-                onChange={handleInputChange}
-              />
-              <Input
-                name="processedStatus"
-                placeholder="Processed Status"
-                value={currentProduct.processedStatus}
-                onChange={handleInputChange}
-              />
-              <div className="flex justify-end gap-2">
-                <Button onClick={() => setIsModalOpen(false)} className="bg-red-600">Cancel</Button>
-                <Button type="submit" className="bg-blue-600">
-                  {editMode ? 'Update' : 'Add'}
-                </Button>
-              </div>
-            </form>
+  {!editMode && (
+    <div>
+      <label className="block text-blue-700 font-semibold mb-1">Product ID:</label>
+      <Input
+        name="product_id"
+        placeholder="Enter Product ID"
+        value={currentProduct.product_id}
+        onChange={handleInputChange}
+      />
+    </div>
+  )}
+
+  <div>
+    <label className="block text-blue-700 font-semibold mb-1">Type:</label>
+    <Input
+      name="type"
+      placeholder="Enter Type"
+      value={currentProduct.type}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-blue-700 font-semibold mb-1">Storage Details:</label>
+    <Input
+      name="storageDetails"
+      placeholder="Enter Storage Details"
+      value={currentProduct.storageDetails}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-blue-700 font-semibold mb-1">Quantity:</label>
+    <Input
+      name="quantity"
+      placeholder="Enter Quantity"
+      value={currentProduct.quantity}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-blue-700 font-semibold mb-1">Collection Date:</label>
+    <Input
+      name="CollectionDate"
+      type="date"
+      value={currentProduct.CollectionDate}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-blue-700 font-semibold mb-1">Processed Status:</label>
+    <Input
+      name="processedStatus"
+      placeholder="Enter Processed Status"
+      value={currentProduct.processedStatus}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div className="flex justify-end gap-2">
+    <Button onClick={() => setIsModalOpen(false)} className="bg-red-600">Cancel</Button>
+    <Button type="submit" className="bg-blue-600">
+      {editMode ? 'Update' : 'Add'}
+    </Button>
+  </div>
+</form>
+
           </div>
         </div>
       )}

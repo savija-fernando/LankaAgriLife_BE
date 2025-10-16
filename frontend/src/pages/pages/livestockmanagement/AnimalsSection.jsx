@@ -229,58 +229,69 @@ const AnimalsSection = () => {
               {editMode ? "Edit Animal" : "Add New Animal"}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-3">
-              <Input
-                name="animal_id"
-                placeholder="Animal ID"
-                value={currentAnimal.animal_id}
-                onChange={handleInputChange}
-                required
-                disabled={editMode !== null}
-              />
-              <Input
-                name="species"
-                placeholder="Species"
-                value={currentAnimal.species}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                name="breedingDetails"
-                placeholder="Breeding Details"
-                value={currentAnimal.breedingDetails}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                type="date"
-                name="feedingData"
-                placeholder="Feeding Data"
-                value={currentAnimal.feedingData}
-                onChange={handleInputChange}
-              />
-              <Input
-                name="healthRecord"
-                placeholder="Health Record"
-                value={currentAnimal.healthRecord}
-                onChange={handleInputChange}
-                required
-              />
-              <Input
-                type="date"
-                name="dateOfBirth"
-                placeholder="Date of Birth"
-                value={currentAnimal.dateOfBirth}
-                onChange={handleInputChange}
-              />
-              <div className="flex justify-end gap-2">
-                <Button type="button" onClick={closeModal} className="!bg-red-600 text-white">
-                  Cancel
-                </Button>
-                <Button type="submit" className="!bg-blue-600 text-white">
-                  {editMode ? "Update" : "Add"}
-                </Button>
-              </div>
-            </form>
+
+  <h4 className="font-semibold text-green-800">Animal ID</h4>
+  <Input
+    name="animal_id"
+    placeholder="Enter Animal ID"
+    value={currentAnimal.animal_id}
+    onChange={handleInputChange}
+    required
+    disabled={editMode !== null}
+  />
+
+  <h4 className="font-semibold text-green-800">Species</h4>
+  <Input
+    name="species"
+    placeholder="Enter Animal Species (e.g., Hen, Cow)"
+    value={currentAnimal.species}
+    onChange={handleInputChange}
+    required
+  />
+
+  <h4 className="font-semibold text-green-800">Breeding Details</h4>
+  <Input
+    name="breedingDetails"
+    placeholder="Enter Breeding Details"
+    value={currentAnimal.breedingDetails}
+    onChange={handleInputChange}
+    required
+  />
+
+  <h4 className="font-semibold text-green-800">Feeding Date</h4>
+  <Input
+    type="date"
+    name="feedingData"
+    value={currentAnimal.feedingData}
+    onChange={handleInputChange}
+  />
+
+  <h4 className="font-semibold text-green-800">Health Record</h4>
+  <Input
+    name="healthRecord"
+    placeholder="Enter Health Record"
+    value={currentAnimal.healthRecord}
+    onChange={handleInputChange}
+    required
+  />
+
+  <h4 className="font-semibold text-green-800">Date of Birth</h4>
+  <Input
+    type="date"
+    name="dateOfBirth"
+    value={currentAnimal.dateOfBirth}
+    onChange={handleInputChange}
+  />
+
+  <div className="flex justify-end gap-2 mt-4">
+    <Button type="button" onClick={closeModal} className="!bg-red-600 text-white">
+      Cancel
+    </Button>
+    <Button type="submit" className="!bg-blue-600 text-white">
+      {editMode ? "Update" : "Add"}
+    </Button>
+  </div>
+</form>
           </div>
         </div>
       )}

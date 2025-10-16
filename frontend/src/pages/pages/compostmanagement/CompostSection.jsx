@@ -187,44 +187,76 @@ const CompostSection = () => {
             <h2 className="text-xl font-semibold mb-4 text-green-700">
               {editMode ? 'Edit Compost' : 'Add New Compost'}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {!editMode && (
-                <Input
-                  name="compost_id"
-                  placeholder="Compost ID"
-                  value={currentCompost.compost_id}
-                  onChange={handleInputChange}
-                />
-              )}
-              <Input
-                name="quantity"
-                type="number"
-                placeholder="Quantity"
-                value={currentCompost.quantity}
-                onChange={handleInputChange}
-              />
-              <Input
-                name="fermentingDate"
-                type="date"
-                placeholder="Fermenting Date"
-                value={currentCompost.fermentingDate}
-                onChange={handleInputChange}
-              />
-              <Input
-                name="compostStatus"
-                placeholder="Status"
-                value={currentCompost.compostStatus}
-                onChange={handleInputChange}
-              />
-              <div className="flex justify-end gap-3">
-                <Button onClick={() => setIsModalOpen(false)} className="bg-red-600 hover:bg-red-500">
-                  Cancel
-                </Button>
-                <Button type="submit" className="bg-green-700 hover:bg-green-600">
-                  {editMode ? 'Update' : 'Add'}
-                </Button>
-              </div>
-            </form>
+            <form onSubmit={handleSubmit} className="space-y-5">
+
+  {/* Section Header */}
+  <h3 className="text-lg font-semibold text-green-800 border-b pb-1">Compost Details</h3>
+
+  {/* Compost ID (only for Add) */}
+  {!editMode && (
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-1">Compost ID</label>
+      <Input
+        name="compost_id"
+        placeholder="Enter Compost ID"
+        value={currentCompost.compost_id}
+        onChange={handleInputChange}
+      />
+    </div>
+  )}
+
+  {/* Quantity */}
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Quantity (kg)</label>
+    <Input
+      name="quantity"
+      type="number"
+      placeholder="Enter Quantity"
+      value={currentCompost.quantity}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  {/* Section Header */}
+  <h3 className="text-lg font-semibold text-green-800 border-b pb-1 mt-4">Fermentation Info</h3>
+
+  {/* Fermenting Date */}
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Fermenting Date</label>
+    <Input
+      name="fermentingDate"
+      type="date"
+      value={currentCompost.fermentingDate}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  {/* Compost Status */}
+  <div>
+    <label className="block text-sm font-medium text-gray-700 mb-1">Compost Status</label>
+    <Input
+      name="compostStatus"
+      placeholder="Enter Compost Status (e.g. Fresh, Fermenting, Ready)"
+      value={currentCompost.compostStatus}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  {/* Buttons */}
+  <div className="flex justify-end gap-3 mt-6">
+    <Button
+      onClick={() => setIsModalOpen(false)}
+      type="button"
+      className="bg-red-600 hover:bg-red-500"
+    >
+      Cancel
+    </Button>
+    <Button type="submit" className="bg-green-700 hover:bg-green-600">
+      {editMode ? 'Update Compost' : 'Add Compost'}
+    </Button>
+  </div>
+</form>
+
           </div>
         </div>
       )}

@@ -242,137 +242,140 @@ const PlantsSection = () => {
               {plants.some(p => p.crop_id === currentPlant.crop_id) ? 'Edit Plant' : 'Add New Plant'}
             </h2>
             <form onSubmit={handleSubmit}>
-              <div className="space-y-4">
-                {/* Crop ID */}
-                <div>
-                  <Input
-                    name="crop_id"
-                    placeholder="Crop ID"
-                    value={currentPlant.crop_id}
-                    onChange={handleInputChange}
-                    required
-                    disabled={plants.some(p => p.crop_id === currentPlant.crop_id)}
-                    className={errors.crop_id ? 'border-red-500' : ''}
-                  />
-                  {errors.crop_id && <p className="text-red-500 text-sm mt-1">{errors.crop_id}</p>}
-                </div>
+  <div className="space-y-4">
 
-                {/* Planting Date */}
-                <div>
-                  <Input
-                    type="date"
-                    name="plantingDate"
-                    placeholder="Planting Date"
-                    value={currentPlant.plantingDate}
-                    onChange={handleInputChange}
-                    required
-                    className={errors.plantingDate ? 'border-red-500' : ''}
-                  />
-                  {errors.plantingDate && <p className="text-red-500 text-sm mt-1">{errors.plantingDate}</p>}
-                </div>
+    {/* Crop ID */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Crop ID</label>
+      <Input
+        name="crop_id"
+        placeholder="Enter Crop ID"
+        value={currentPlant.crop_id}
+        onChange={handleInputChange}
+        required
+        disabled={plants.some(p => p.crop_id === currentPlant.crop_id)}
+        className={errors.crop_id ? 'border-red-500' : ''}
+      />
+      {errors.crop_id && <p className="text-red-500 text-sm mt-1">{errors.crop_id}</p>}
+    </div>
 
-                {/* Type */}
-                <div>
-                  <Input
-                    name="type"
-                    placeholder="Plant Type"
-                    value={currentPlant.type}
-                    onChange={handleInputChange}
-                    required
-                    className={errors.type ? 'border-red-500' : ''}
-                  />
-                  {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
-                </div>
+    {/* Planting Date */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Planting Date</label>
+      <Input
+        type="date"
+        name="plantingDate"
+        value={currentPlant.plantingDate}
+        onChange={handleInputChange}
+        required
+        className={errors.plantingDate ? 'border-red-500' : ''}
+      />
+      {errors.plantingDate && <p className="text-red-500 text-sm mt-1">{errors.plantingDate}</p>}
+    </div>
 
-                {/* Location */}
-                <div>
-                  <Input
-                    name="location"
-                    placeholder="Location"
-                    value={currentPlant.location}
-                    onChange={handleInputChange}
-                    required
-                    className={errors.location ? 'border-red-500' : ''}
-                  />
-                  {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location}</p>}
-                </div>
+    {/* Type */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Plant Type</label>
+      <Input
+        name="type"
+        placeholder="Enter Plant Type"
+        value={currentPlant.type}
+        onChange={handleInputChange}
+        required
+        className={errors.type ? 'border-red-500' : ''}
+      />
+      {errors.type && <p className="text-red-500 text-sm mt-1">{errors.type}</p>}
+    </div>
 
-                {/* Harvest Date */}
-                <div>
-                  <Input
-                    type="date"
-                    name="harvestDate"
-                    placeholder="Harvest Date"
-                    value={currentPlant.harvestDate}
-                    onChange={handleInputChange}
-                    required
-                    className={errors.harvestDate ? 'border-red-500' : ''}
-                  />
-                  {errors.harvestDate && <p className="text-red-500 text-sm mt-1">{errors.harvestDate}</p>}
-                </div>
+    {/* Location */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Location</label>
+      <Input
+        name="location"
+        placeholder="Enter Location"
+        value={currentPlant.location}
+        onChange={handleInputChange}
+        required
+        className={errors.location ? 'border-red-500' : ''}
+      />
+      {errors.location && <p className="text-red-500 text-sm mt-1">{errors.location}</p>}
+    </div>
 
-                {/* Water Intake */}
-                <div>
-                  <Input
-                    name="waterIntake"
-                    placeholder="Water Intake (ml per day)"
-                    value={currentPlant.waterIntake}
-                    onChange={handleInputChange}
-                    required
-                    className={errors.waterIntake ? 'border-red-500' : ''}
-                  />
-                  {errors.waterIntake && <p className="text-red-500 text-sm mt-1">{errors.waterIntake}</p>}
-                  {!errors.waterIntake && currentPlant.waterIntake && (
-                    <p className="text-gray-500 text-sm mt-1">Water intake per day in milliliters (ml)</p>
-                  )}
-                </div>
+    {/* Harvest Date */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Harvest Date</label>
+      <Input
+        type="date"
+        name="harvestDate"
+        value={currentPlant.harvestDate}
+        onChange={handleInputChange}
+        required
+        className={errors.harvestDate ? 'border-red-500' : ''}
+      />
+      {errors.harvestDate && <p className="text-red-500 text-sm mt-1">{errors.harvestDate}</p>}
+    </div>
 
-                {/* Fertilizer Intake */}
-                <div>
-                  <Input
-                    name="fertilizerIntake"
-                    placeholder="Fertilizer Intake (g per week)"
-                    value={currentPlant.fertilizerIntake}
-                    onChange={handleInputChange}
-                    required
-                    className={errors.fertilizerIntake ? 'border-red-500' : ''}
-                  />
-                  {errors.fertilizerIntake && <p className="text-red-500 text-sm mt-1">{errors.fertilizerIntake}</p>}
-                  {!errors.fertilizerIntake && currentPlant.fertilizerIntake && (
-                    <p className="text-gray-500 text-sm mt-1">Fertilizer intake per week in grams (g)</p>
-                  )}
-                </div>
+    {/* Water Intake */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Water Intake (ml per day)</label>
+      <Input
+        name="waterIntake"
+        placeholder="Enter Water Intake (ml)"
+        value={currentPlant.waterIntake}
+        onChange={handleInputChange}
+        required
+        className={errors.waterIntake ? 'border-red-500' : ''}
+      />
+      {errors.waterIntake && <p className="text-red-500 text-sm mt-1">{errors.waterIntake}</p>}
+    </div>
 
-                {/* Employee ID */}
-                <div>
-                  <Input
-                    name="employee_id"
-                    placeholder="Employee ID"
-                    value={currentPlant.employee_id}
-                    onChange={handleInputChange}
-                    required
-                    className={errors.employee_id ? 'border-red-500' : ''}
-                  />
-                  {errors.employee_id && <p className="text-red-500 text-sm mt-1">{errors.employee_id}</p>}
-                </div>
+    {/* Fertilizer Intake */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Fertilizer Intake (g per week)</label>
+      <Input
+        name="fertilizerIntake"
+        placeholder="Enter Fertilizer Intake (g)"
+        value={currentPlant.fertilizerIntake}
+        onChange={handleInputChange}
+        required
+        className={errors.fertilizerIntake ? 'border-red-500' : ''}
+      />
+      {errors.fertilizerIntake && <p className="text-red-500 text-sm mt-1">{errors.fertilizerIntake}</p>}
+    </div>
 
-                <div className="flex justify-end space-x-4 mt-4">
-                  <Button 
-                    onClick={() => setIsModalOpen(false)} 
-                    className="bg-red-600 hover:bg-red-500"
-                    type="button"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    type="submit" 
-                    className="bg-blue-600 hover:bg-blue-500"
-                  >
-                    {plants.some(p => p.crop_id === currentPlant.crop_id) ? 'Update Plant' : 'Add Plant'}
-                  </Button>
-                </div>
-              </div>
-            </form>
+    {/* Employee ID */}
+    <div>
+      <label className="block font-medium text-gray-700 mb-1">Employee ID</label>
+      <Input
+        name="employee_id"
+        placeholder="Enter Employee ID"
+        value={currentPlant.employee_id}
+        onChange={handleInputChange}
+        required
+        className={errors.employee_id ? 'border-red-500' : ''}
+      />
+      {errors.employee_id && <p className="text-red-500 text-sm mt-1">{errors.employee_id}</p>}
+    </div>
+
+    {/* Buttons */}
+    <div className="flex justify-end space-x-4 mt-4">
+      <Button 
+        onClick={() => setIsModalOpen(false)} 
+        className="bg-red-600 hover:bg-red-500"
+        type="button"
+      >
+        Cancel
+      </Button>
+      <Button 
+        type="submit" 
+        className="bg-blue-600 hover:bg-blue-500"
+      >
+        {plants.some(p => p.crop_id === currentPlant.crop_id) ? 'Update Plant' : 'Add Plant'}
+      </Button>
+    </div>
+
+  </div>
+</form>
           </div>
         </div>
       )}

@@ -311,114 +311,140 @@ const FarmersSection = () => {
             <h2 className="text-xl font-semibold mb-4 text-green-700">
               {editMode ? 'Edit Farmer' : 'Add New Farmer'}
             </h2>
-            <form onSubmit={handleAddOrEditFarmerSubmit} className="space-y-4">
-              {/* Farmer ID */}
-              <div>
-                <Input
-                  name="farmer_id"
-                  placeholder="Farmer ID *"
-                  value={newFarmerData.farmer_id}
-                  onChange={handleModalInputChange}
-                  onBlur={handleBlur}
-                  disabled={!!editMode}
-                  className={`border-2 ${errors.farmer_id ? 'border-red-500' : 'border-green-500'}`}
-                />
-                {errors.farmer_id && <p className="text-red-500 text-sm mt-1">{errors.farmer_id}</p>}
-              </div>
+            <form onSubmit={handleAddOrEditFarmerSubmit} className="space-y-6">
 
-              {/* First Name */}
-              <div>
-                <Input
-                  name="f_name"
-                  placeholder="First Name *"
-                  value={newFarmerData.f_name}
-                  onChange={handleModalInputChange}
-                  onBlur={handleBlur}
-                  className={`border-2 ${errors.f_name ? 'border-red-500' : 'border-green-500'}`}
-                />
-                {errors.f_name && <p className="text-red-500 text-sm mt-1">{errors.f_name}</p>}
-              </div>
+  {/* 🧑 Farmer Information Header */}
+  <h3 className="text-lg font-semibold text-green-700 border-b pb-1">
+    Farmer Information
+  </h3>
 
-              {/* Last Name */}
-              <div>
-                <Input
-                  name="l_name"
-                  placeholder="Last Name *"
-                  value={newFarmerData.l_name}
-                  onChange={handleModalInputChange}
-                  onBlur={handleBlur}
-                  className={`border-2 ${errors.l_name ? 'border-red-500' : 'border-green-500'}`}
-                />
-                {errors.l_name && <p className="text-red-500 text-sm mt-1">{errors.l_name}</p>}
-              </div>
+  {/* Farmer ID */}
+  <div>
+    <label className="block text-gray-700 font-medium mb-1">Farmer ID *</label>
+    <Input
+      name="farmer_id"
+      placeholder="Enter Farmer ID"
+      value={newFarmerData.farmer_id}
+      onChange={handleModalInputChange}
+      onBlur={handleBlur}
+      disabled={!!editMode}
+      className={`border-2 ${errors.farmer_id ? 'border-red-500' : 'border-green-500'}`}
+    />
+    {errors.farmer_id && <p className="text-red-500 text-sm mt-1">{errors.farmer_id}</p>}
+  </div>
 
-              {/* Email */}
-              <div>
-                <Input
-                  name="email"
-                  placeholder="Email"
-                  value={newFarmerData.email}
-                  onChange={handleModalInputChange}
-                  onBlur={handleBlur}
-                  className={`border-2 ${errors.email ? 'border-red-500' : 'border-green-500'}`}
-                  type="email"
-                />
-                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
-              </div>
+  {/* First Name */}
+  <div>
+    <label className="block text-gray-700 font-medium mb-1">First Name *</label>
+    <Input
+      name="f_name"
+      placeholder="Enter First Name"
+      value={newFarmerData.f_name}
+      onChange={handleModalInputChange}
+      onBlur={handleBlur}
+      className={`border-2 ${errors.f_name ? 'border-red-500' : 'border-green-500'}`}
+    />
+    {errors.f_name && <p className="text-red-500 text-sm mt-1">{errors.f_name}</p>}
+  </div>
 
-              {/* Contact Number */}
-              <div>
-                <Input
-                  name="contact_No"
-                  placeholder="Contact Number"
-                  value={newFarmerData.contact_No}
-                  onChange={handleModalInputChange}
-                  onBlur={handleBlur}
-                  className={`border-2 ${errors.contact_No ? 'border-red-500' : 'border-green-500'}`}
-                  type="tel"
-                />
-                {errors.contact_No && <p className="text-red-500 text-sm mt-1">{errors.contact_No}</p>}
-                {!errors.contact_No && newFarmerData.contact_No && (
-                  <p className="text-gray-500 text-sm mt-1">10-15 digits without spaces or special characters</p>
-                )}
-              </div>
+  {/* Last Name */}
+  <div>
+    <label className="block text-gray-700 font-medium mb-1">Last Name *</label>
+    <Input
+      name="l_name"
+      placeholder="Enter Last Name"
+      value={newFarmerData.l_name}
+      onChange={handleModalInputChange}
+      onBlur={handleBlur}
+      className={`border-2 ${errors.l_name ? 'border-red-500' : 'border-green-500'}`}
+    />
+    {errors.l_name && <p className="text-red-500 text-sm mt-1">{errors.l_name}</p>}
+  </div>
 
-              {/* Login Credentials */}
-              <div>
-                <Input
-                  name="loginCredentials"
-                  placeholder="Login Credentials"
-                  value={newFarmerData.loginCredentials}
-                  onChange={handleModalInputChange}
-                  onBlur={handleBlur}
-                  className={`border-2 ${errors.loginCredentials ? 'border-red-500' : 'border-green-500'}`}
-                />
-                {errors.loginCredentials && <p className="text-red-500 text-sm mt-1">{errors.loginCredentials}</p>}
-              </div>
+  {/* 📧 Contact Information Header */}
+  <h3 className="text-lg font-semibold text-green-700 border-b pb-1">
+    Contact Information
+  </h3>
 
-              <div className="flex justify-end space-x-4 mt-6 pt-4 border-t border-gray-200">
-                <Button
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setEditMode(null);
-                    setErrorMsg('');
-                    setErrors({});
-                  }}
-                  className="bg-gray-500 hover:bg-gray-400 text-white px-6"
-                  type="button"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className={`${
-                    editMode ? 'bg-yellow-500 hover:bg-yellow-400' : 'bg-blue-700 hover:bg-blue-600'
-                  } text-white px-6`}
-                >
-                  {editMode ? 'Update Farmer' : 'Add Farmer'}
-                </Button>
-              </div>
-            </form>
+  {/* Email */}
+  <div>
+    <label className="block text-gray-700 font-medium mb-1">Email</label>
+    <Input
+      name="email"
+      placeholder="Enter Email Address"
+      value={newFarmerData.email}
+      onChange={handleModalInputChange}
+      onBlur={handleBlur}
+      className={`border-2 ${errors.email ? 'border-red-500' : 'border-green-500'}`}
+      type="email"
+    />
+    {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email}</p>}
+  </div>
+
+  {/* Contact Number */}
+  <div>
+    <label className="block text-gray-700 font-medium mb-1">Contact Number</label>
+    <Input
+      name="contact_No"
+      placeholder="Enter Phone Number"
+      value={newFarmerData.contact_No}
+      onChange={handleModalInputChange}
+      onBlur={handleBlur}
+      className={`border-2 ${errors.contact_No ? 'border-red-500' : 'border-green-500'}`}
+      type="tel"
+    />
+    {errors.contact_No && <p className="text-red-500 text-sm mt-1">{errors.contact_No}</p>}
+    {!errors.contact_No && newFarmerData.contact_No && (
+      <p className="text-gray-500 text-sm mt-1">
+        10–15 digits without spaces or special characters
+      </p>
+    )}
+  </div>
+
+  {/* 🔐 Login Credentials Header */}
+  <h3 className="text-lg font-semibold text-green-700 border-b pb-1">
+    Login Information
+  </h3>
+
+  {/* Login Credentials */}
+  <div>
+    <label className="block text-gray-700 font-medium mb-1">Login Credentials</label>
+    <Input
+      name="loginCredentials"
+      placeholder="Enter Login Credentials"
+      value={newFarmerData.loginCredentials}
+      onChange={handleModalInputChange}
+      onBlur={handleBlur}
+      className={`border-2 ${errors.loginCredentials ? 'border-red-500' : 'border-green-500'}`}
+    />
+    {errors.loginCredentials && <p className="text-red-500 text-sm mt-1">{errors.loginCredentials}</p>}
+  </div>
+
+  {/* Buttons */}
+  <div className="flex justify-end space-x-4 mt-6 pt-4 border-t border-gray-200">
+    <Button
+      onClick={() => {
+        setIsModalOpen(false);
+        setEditMode(null);
+        setErrorMsg('');
+        setErrors({});
+      }}
+      className="bg-gray-500 hover:bg-gray-400 text-white px-6"
+      type="button"
+    >
+      Cancel
+    </Button>
+    <Button
+      type="submit"
+      className={`${
+        editMode ? 'bg-yellow-500 hover:bg-yellow-400' : 'bg-blue-700 hover:bg-blue-600'
+      } text-white px-6`}
+    >
+      {editMode ? 'Update Farmer' : 'Add Farmer'}
+    </Button>
+  </div>
+</form>
+
           </div>
         </div>
       )}

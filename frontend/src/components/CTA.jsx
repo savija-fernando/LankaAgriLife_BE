@@ -1,4 +1,5 @@
 import React from "react";
+import { NavLink } from "react-router-dom"; // Add this import
 
 const CTA = () => {
   return (
@@ -45,31 +46,30 @@ const CTA = () => {
           </div>
         </div>
 
+      
         {/* CTA Button */}
-        <div className="mt-12">
-          <a
-            href="https://forms.gle/mRTVNNsFcSJhvZHH8"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative inline-flex items-center justify-center px-8 py-4 sm:px-12 sm:py-5 text-lg sm:text-xl font-bold text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 hover:from-green-500 hover:to-emerald-500 overflow-hidden"
-          >
-            {/* Button shine effect */}
-            <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
-            
-            {/* Button content */}
-            <span className="relative flex items-center">
-              Join as a Farmer
-              <svg 
-                className="ml-3 w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" 
-                fill="none" 
-                stroke="currentColor" 
-                viewBox="0 0 24 24"
-              >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </span>
-          </a>
-        </div>
+<div className="mt-12">
+  <NavLink
+    to="/login"
+    className="group relative inline-flex items-center justify-center px-8 py-4 sm:px-12 sm:py-5 text-lg sm:text-xl font-bold text-white bg-gradient-to-r from-green-600 to-emerald-600 rounded-2xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 hover:from-green-500 hover:to-emerald-500 overflow-hidden"
+  >
+    {/* Button shine effect */}
+    <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 transform translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000"></div>
+    
+    {/* Button content */}
+    <span className="relative flex items-center">
+      Join as a Farmer
+      <svg 
+        className="ml-3 w-5 h-5 transform group-hover:translate-x-1 transition-transform duration-300" 
+        fill="none" 
+        stroke="currentColor" 
+        viewBox="0 0 24 24"
+      >
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+         </svg>
+        </span>
+      </NavLink>
+    </div>
 
         {/* Trust indicator */}
         <div className="mt-8 text-sm text-gray-600 font-medium">

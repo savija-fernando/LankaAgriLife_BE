@@ -165,34 +165,71 @@ const CompostHandlerSection = () => {
             <h2 className="text-xl font-semibold text-green-700 mb-4">
               {editMode ? "Edit Handler" : "Add Handler"}
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-3">
-              {[
-                "CompostHandler_id",
-                "f_name",
-                "l_name",
-                "loginCredentials",
-                "email",
-                "contact_No",
-              ].map((field) => (
+           <form onSubmit={handleSubmit} className="space-y-4">
+              {/* Section 1: Basic Info */}
+              <h3 className="text-lg font-semibold text-green-600 border-b border-green-300 pb-1">
+                Basic Info
+              </h3>
+              <Input
+                name="CompostHandler_id"
+                placeholder="Handler ID"
+                value={currentHandler.CompostHandler_id}
+                onChange={handleInputChange}
+                disabled={!!editMode}
+              />
+              <div className="flex gap-2">
                 <Input
-                  key={field}
-                  name={field}
-                  placeholder={field}
-                  value={currentHandler[field]}
+                  name="f_name"
+                  placeholder="First Name"
+                  value={currentHandler.f_name}
                   onChange={handleInputChange}
                 />
-              ))}
-              <div className="flex justify-end gap-3">
+                <Input
+                  name="l_name"
+                  placeholder="Last Name"
+                  value={currentHandler.l_name}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              {/* Section 2: Login Details */}
+              <h3 className="text-lg font-semibold text-green-600 border-b border-green-300 pb-1 mt-3">
+                Login Details
+              </h3>
+              <Input
+                name="loginCredentials"
+                placeholder="Login Credentials"
+                value={currentHandler.loginCredentials}
+                onChange={handleInputChange}
+              />
+
+              {/* Section 3: Contact Info */}
+              <h3 className="text-lg font-semibold text-green-600 border-b border-green-300 pb-1 mt-3">
+                Contact Info
+              </h3>
+              <Input
+                name="email"
+                type="email"
+                placeholder="Email"
+                value={currentHandler.email}
+                onChange={handleInputChange}
+              />
+              <Input
+                name="contact_No"
+                type="tel"
+                placeholder="Contact Number"
+                value={currentHandler.contact_No}
+                onChange={handleInputChange}
+              />
+
+              <div className="flex justify-end gap-3 mt-4">
                 <Button
                   onClick={() => setIsModalOpen(false)}
                   className="bg-red-600 hover:bg-red-500"
                 >
                   Cancel
                 </Button>
-                <Button
-                  type="submit"
-                  className="bg-green-700 hover:bg-green-600"
-                >
+                <Button type="submit" className="bg-green-700 hover:bg-green-600">
                   {editMode ? "Update" : "Add"}
                 </Button>
               </div>

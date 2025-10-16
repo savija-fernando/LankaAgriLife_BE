@@ -146,16 +146,66 @@ const HandlersSection = () => {
             <button onClick={() => setIsModalOpen(false)} className="absolute top-2 right-2 text-gray-500 text-2xl">&times;</button>
             <h2 className="text-xl font-semibold mb-4 text-green-700">{editMode ? 'Edit Handler' : 'Add New Handler'}</h2>
             <form onSubmit={handleSubmit} className="space-y-3">
-              <Input name="firstName" placeholder="First Name" value={currentHandler.firstName} onChange={handleInputChange} />
-              <Input name="lastName" placeholder="Last Name" value={currentHandler.lastName} onChange={handleInputChange} />
-              <Input name="email" placeholder="Email" value={currentHandler.email} onChange={handleInputChange} />
-              <Input name="contact_No" placeholder="Contact No" value={currentHandler.contact_No} onChange={handleInputChange} />
-              <Input name="password" placeholder="Password" value={currentHandler.password} onChange={handleInputChange} />
-              <div className="flex justify-end gap-2">
-                <Button onClick={() => setIsModalOpen(false)} className="bg-red-600">Cancel</Button>
-                <Button type="submit" className="bg-green-700">{editMode ? 'Update' : 'Add'}</Button>
-              </div>
-            </form>
+  <div>
+    <label className="block text-green-700 font-semibold mb-1">First Name:</label>
+    <Input
+      name="firstName"
+      placeholder="Enter First Name"
+      value={currentHandler.firstName}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-green-700 font-semibold mb-1">Last Name:</label>
+    <Input
+      name="lastName"
+      placeholder="Enter Last Name"
+      value={currentHandler.lastName}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-green-700 font-semibold mb-1">Email:</label>
+    <Input
+      name="email"
+      placeholder="Enter Email"
+      value={currentHandler.email}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-green-700 font-semibold mb-1">Phone:</label>
+    <Input
+      name="contact_No"
+      placeholder="Enter Contact No"
+      value={currentHandler.contact_No}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div>
+    <label className="block text-green-700 font-semibold mb-1">Password:</label>
+    <Input
+      name="password"
+      placeholder="Enter Password"
+      value={currentHandler.password}
+      onChange={handleInputChange}
+    />
+  </div>
+
+  <div className="flex justify-end gap-2">
+    <Button onClick={() => setIsModalOpen(false)} className="bg-red-600">
+      Cancel
+    </Button>
+    <Button type="submit" className="bg-green-700">
+      {editMode ? 'Update' : 'Add'}
+    </Button>
+  </div>
+</form>
+
           </div>
         </div>
       )}

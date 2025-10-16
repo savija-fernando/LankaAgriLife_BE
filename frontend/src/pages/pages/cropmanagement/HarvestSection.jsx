@@ -193,69 +193,88 @@ const HarvestSection = () => {
               {editMode ? "Edit Harvest" : "Add New Harvest"}
             </h2>
             <form onSubmit={handleAddOrEditHarvestSubmit}>
-              <div className="space-y-4">
-                {!editMode && (
-                  <Input
-                    name="harvest_id"
-                    placeholder="Harvest ID"
-                    value={currentHarvest.harvest_id}
-                    onChange={handleInputChange}
-                    required
-                    className="border-2 border-black"
-                  />
-                )}
-                <Input
-                  name="type"
-                  placeholder="Type"
-                  value={currentHarvest.type}
-                  onChange={handleInputChange}
-                  required
-                  className="border-2 border-black"
-                />
-                <Input
-                  name="quantity"
-                  placeholder="Quantity"
-                  value={currentHarvest.quantity}
-                  onChange={handleInputChange}
-                  required
-                  className="border-2 border-black"
-                />
-                <Input
-                  type="date"
-                  name="harvestDate"
-                  placeholder="Harvest Date"
-                  value={currentHarvest.harvestDate}
-                  onChange={handleInputChange}
-                  required
-                  className="border-2 border-black"
-                />
-                <Input
-                  name="note"
-                  placeholder="Note"
-                  value={currentHarvest.note}
-                  onChange={handleInputChange}
-                  className="border-2 border-black"
-                />
+  <div className="space-y-4">
+    {!editMode && (
+      <div>
+        <label className="block text-green-700 font-semibold mb-1">Harvest ID:</label>
+        <Input
+          name="harvest_id"
+          placeholder="Enter Harvest ID"
+          value={currentHarvest.harvest_id}
+          onChange={handleInputChange}
+          required
+          className="border-2 border-black"
+        />
+      </div>
+    )}
 
-                <div className="flex justify-end space-x-4 mt-4">
-                  <Button
-                    onClick={() => setIsModalOpen(false)}
-                    className="bg-red-600 hover:bg-red-500"
-                    type="button"
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    type="submit"
-                    className={`${
-                      editMode ? "bg-yellow-500 hover:bg-yellow-400" : "bg-blue-600 hover:bg-blue-500"
-                    } text-white`}
-                  >
-                    {editMode ? "Update Harvest" : "Add Harvest"}
-                  </Button>
-                </div>
-              </div>
-            </form>
+    <div>
+      <label className="block text-green-700 font-semibold mb-1">Type:</label>
+      <Input
+        name="type"
+        placeholder="Enter Type"
+        value={currentHarvest.type}
+        onChange={handleInputChange}
+        required
+        className="border-2 border-black"
+      />
+    </div>
+
+    <div>
+      <label className="block text-green-700 font-semibold mb-1">Quantity:</label>
+      <Input
+        name="quantity"
+        placeholder="Enter Quantity"
+        value={currentHarvest.quantity}
+        onChange={handleInputChange}
+        required
+        className="border-2 border-black"
+      />
+    </div>
+
+    <div>
+      <label className="block text-green-700 font-semibold mb-1">Harvest Date:</label>
+      <Input
+        type="date"
+        name="harvestDate"
+        value={currentHarvest.harvestDate}
+        onChange={handleInputChange}
+        required
+        className="border-2 border-black"
+      />
+    </div>
+
+    <div>
+      <label className="block text-green-700 font-semibold mb-1">Note:</label>
+      <Input
+        name="note"
+        placeholder="Enter Note"
+        value={currentHarvest.note}
+        onChange={handleInputChange}
+        className="border-2 border-black"
+      />
+    </div>
+
+    <div className="flex justify-end space-x-4 mt-4">
+      <Button
+        onClick={() => setIsModalOpen(false)}
+        className="bg-red-600 hover:bg-red-500"
+        type="button"
+      >
+        Cancel
+      </Button>
+      <Button
+        type="submit"
+        className={`${
+          editMode ? "bg-yellow-500 hover:bg-yellow-400" : "bg-blue-600 hover:bg-blue-500"
+        } text-white`}
+      >
+        {editMode ? "Update Harvest" : "Add Harvest"}
+      </Button>
+    </div>
+  </div>
+</form>
+
           </div>
         </div>
       )}
